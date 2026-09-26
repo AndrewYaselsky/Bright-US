@@ -5108,11 +5108,6 @@ span.save_bg_color {
     display: none;
 }
 
-.bundle_product_page .percentage_price_col .product_prices {
-    opacity: 0;
-    visibility: hidden;
-  display:none;
-}
 .product_prices_sum {
     color: var(--green--100, #00FE67);
     font-family: Inter;
