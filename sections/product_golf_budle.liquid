@@ -957,47 +957,75 @@
       return price.formatted || '';
     }
 
+    function setBundlePriceElement(el, html) {
+      if (!el || !html) return;
+      el.innerHTML = html;
+
+      const shopCurrency = window.theme && window.theme.shopCurrency;
+      const selector = document.querySelector('.CurrencySelector__Select');
+      const activeCurrency = (selector && selector.value) || shopCurrency;
+      if (!shopCurrency) return;
+
+      el.setAttribute('data-currency-' + shopCurrency, html);
+      if (activeCurrency) {
+        el.setAttribute('data-currency-' + activeCurrency, html);
+        el.setAttribute('data-currency', activeCurrency);
+      }
+    }
+
+    let lastAppliedBundlePrice = '';
+
     function updateBundlePrices(pricing) {
       if (!pricing) return;
 
       const current = bundlePriceText(pricing.discountedPrice);
       const compare = bundlePriceText(pricing.fullPrice);
-      const currentEl = document.querySelector('.changable_price_main');
-      const compareEl = document.querySelector('.compare_at_price_main');
+      if (!current) return;
 
-      if (currentEl && current) currentEl.textContent = current;
-      if (compareEl && compare) compareEl.innerHTML = '<b>was</b> <p>' + compare + '</p>';
+      const signature = current + '|' + compare;
+      if (signature === lastAppliedBundlePrice) return;
+      lastAppliedBundlePrice = signature;
+
+      setBundlePriceElement(document.querySelector('.changable_price_main'), current);
+      if (compare) {
+        setBundlePriceElement(
+          document.querySelector('.compare_at_price_main'),
+          '<b>was</b> <p>' + compare + '</p>'
+        );
+      }
 
       const stickyCurrent = document.querySelector('.sticky-add-to-cart-content-price .money');
       const stickyCompare = document.querySelector('.sticky-add-to-cart-content-compare-at-price');
-      if (stickyCurrent && current) stickyCurrent.textContent = current;
+      if (stickyCurrent) stickyCurrent.textContent = current;
       if (stickyCompare && compare) stickyCompare.textContent = compare;
     }
 
+    function pricingFromBlock(block) {
+      if (!block || typeof block.pricing !== 'function') return null;
+      try {
+        return block.pricing();
+      } catch (error) {
+        return null;
+      }
+    }
+
     document.addEventListener('variants-changed', (event) => {
-      const block = event.target;
-      if (!block || block.tagName !== 'KACHING-BUNDLES-BLOCK') return;
-      updateBundlePrices(event.detail && event.detail.pricing);
+      const pricing = event.detail && event.detail.pricing;
+      if (!pricing || !pricing.discountedPrice) return;
+      updateBundlePrices(pricing);
     });
 
-    function syncKachingPrice(block) {
-      if (!block || block.dataset.priceBound === 'true' || typeof block.pricing !== 'function') return;
-      block.dataset.priceBound = 'true';
-      updateBundlePrices(block.pricing());
-    }
+    document.addEventListener('deal-bar-selected', () => {
+      setTimeout(() => {
+        updateBundlePrices(pricingFromBlock(document.querySelector('kaching-bundles-block')));
+      }, 0);
+    });
 
-    const kachingPriceBlock = document.querySelector('kaching-bundles-block');
-    if (kachingPriceBlock) {
-      syncKachingPrice(kachingPriceBlock);
-    } else {
-      const kachingPriceObserver = new MutationObserver(() => {
-        const block = document.querySelector('kaching-bundles-block');
-        if (!block) return;
-        kachingPriceObserver.disconnect();
-        syncKachingPrice(block);
-      });
-      kachingPriceObserver.observe(document.documentElement, { childList: true, subtree: true });
-    }
+    const kachingPriceStarted = Date.now();
+    const kachingPriceTimer = setInterval(() => {
+      updateBundlePrices(pricingFromBlock(document.querySelector('kaching-bundles-block')));
+      if (Date.now() - kachingPriceStarted > 5000) clearInterval(kachingPriceTimer);
+    }, 200);
   
     atcBtn.addEventListener('click', async (e) => {
       e.preventDefault();
