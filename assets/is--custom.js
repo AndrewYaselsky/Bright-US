@@ -602,24 +602,35 @@ $(function() {
 
 /* bundle product page */
 
+function bundlePriceText(formattedPrice) {
+  if (formattedPrice == null) return '';
+  return String(formattedPrice).trim();
+}
+
 function bundleSalePrice(formattedPrice) {
-  var raw = String(formattedPrice || '');
+  var raw = bundlePriceText(formattedPrice);
   var numeric = parseFloat(raw.replace(/[^0-9.]/g, ''));
   if (!numeric) return raw;
   var sale = (Math.round(numeric * 30) / 100).toFixed(2);
-  if (raw.indexOf('$') !== -1) return '$' + sale;
-  return sale;
+  if (raw.indexOf('€') !== -1) return '€' + sale;
+  return '$' + sale;
+}
+
+function activeBundlePrice() {
+  var active = document.querySelector('.bundle_pick_ball_box_in.active');
+  if (!active) return '';
+  return active.getAttribute('data-price') || '';
 }
 
 $(document).ready(function(){
   
-  var prices = $(".bundle_pick_ball_box_in.active").data("price");
+  var prices = activeBundlePrice();
 
         if (prices) {
           $(".product_prices_sum").text(bundleSalePrice(prices));
           $(".product_right_total_price span").text(prices);
+          $(".show_add_to_cart .sticky_product_name_after_current").text(prices);
         }
-        $(".show_add_to_cart .sticky_product_name_after_current").text(prices);
   
     // Get the value of the checked radio button
   //   var vals = parseFloat($(".bundle_pick_ball_box_in input[type='radio']:checked").val());
@@ -735,7 +746,8 @@ $(document).ready(function(){
         $(".bundle_pick_ball_box_in").removeClass("active");
         $(this).addClass("active");
 
-        var prices = $(".bundle_pick_ball_box_in.active").data("price");
+        var prices = activeBundlePrice();
+        if (!prices) return;
 
         $(".product_prices_sum").text(bundleSalePrice(prices));
         $(".product_right_total_price span").text(prices);

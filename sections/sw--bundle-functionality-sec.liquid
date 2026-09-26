@@ -69,22 +69,8 @@
                       <div class="price">
                         <div class="discount_price_col">
                           <div class="bundle_discount_price_wrap">
-                            {%- assign old_price = product.compare_at_price -%}
-                            {%- assign new_price = product.price -%}
-
-                            {%- if product.handle == 'starter-bundle' -%}
-                              {%- assign old_price = 8490 -%}
-                            {%- elsif product.handle == 'athlete-bundle' -%}
-                              {%- assign old_price = 15995 -%}
-                            {%- elsif product.handle == 'team-bundle' -%}
-                              {%- assign old_price = 34495 -%}
-                            {%- elsif product.handle == 'accessories-bundle' -%}
-                              {%- assign old_price = 15495 -%}
-                            {%- elsif product.handle == 'starter-bundle-copy' -%}
-                              {%- assign old_price = 11995 -%}
-                            {%- elsif product.handle == 'essential-accessories-bundle' -%}
-                              {%- assign old_price = 15495 -%}
-                            {%- endif -%}
+                            {%- assign old_price = product.price -%}
+                            {%- assign new_price = old_price | times: 0.30 | round -%}
                             
                             {%- if old_price > 0 -%}
                               <span class="total_value">
@@ -94,23 +80,8 @@
                             
                             <div class="percentage_price_col">
                               <span>{{ new_price | money }}</span>
-                              
-                              {%- if old_price > new_price -%}
-                                {% assign discount_amount = new_price | times: 100 %}
-                                {% assign get_diff = discount_amount | divided_by: old_price %}
-                                
-                                {% assign discount_percentage = 100 | minus: get_diff | round: 0 %}
-                                
-                                {% if discount_percentage >= 40 and discount_percentage < 45 %}
-                                  {% assign display_discount = 40 %}
-                                {% elsif discount_percentage >= 45 and discount_percentage < 49 %}
-                                  {% assign display_discount = 45 %}
-                                {% elsif discount_percentage >= 49 %}
-                                  {% assign display_discount = 50 %}
-                                {% else %}
-                                  {% assign display_discount = discount_percentage %}
-                                {% endif %}
-                                <div class="save_bg_color">Save {{ display_discount }}%</div>
+                              {%- if old_price > 0 -%}
+                                <span class="save_bg_color">Save 70%</span>
                               {%- endif -%}
                             </div>
                           </div>
@@ -195,22 +166,8 @@
                       <div class="price">
                         <div class="discount_price_col">
                           <div class="bundle_discount_price_wrap">
-                            {%- assign old_price = product.compare_at_price -%}
-                            {%- assign new_price = product.price -%}
-
-                            {%- if product.handle == 'starter-bundle' -%}
-                              {%- assign old_price = 8490 -%}
-                            {%- elsif product.handle == 'athlete-bundle' -%}
-                              {%- assign old_price = 15995 -%}
-                            {%- elsif product.handle == 'team-bundle' -%}
-                              {%- assign old_price = 34495 -%}
-                            {%- elsif product.handle == 'accessories-bundle' -%}
-                              {%- assign old_price = 15495 -%}
-                            {%- elsif product.handle == 'starter-bundle-copy' -%}
-                              {%- assign old_price = 11995 -%}
-                            {%- elsif product.handle == 'essential-accessories-bundle' -%}
-                              {%- assign old_price = 15495 -%}
-                            {%- endif -%}
+                            {%- assign old_price = product.price -%}
+                            {%- assign new_price = old_price | times: 0.30 | round -%}
                             
                             {%- if old_price > 0 -%}
                               <span class="total_value">
@@ -220,23 +177,8 @@
                             
                             <div class="percentage_price_col">
                               <span>{{ new_price | money }}</span>
-                              
-                              {%- if old_price > new_price -%}
-                                {% assign discount_amount = new_price | times: 100 %}
-                                {% assign get_diff = discount_amount | divided_by: old_price %}
-                                
-                                {% assign discount_percentage = 100 | minus: get_diff | round: 0 %}
-                                
-                                {% if discount_percentage >= 40 and discount_percentage < 45 %}
-                                  {% assign display_discount = 40 %}
-                                {% elsif discount_percentage >= 45 and discount_percentage < 49 %}
-                                  {% assign display_discount = 45 %}
-                                {% elsif discount_percentage >= 49 %}
-                                  {% assign display_discount = 50 %}
-                                {% else %}
-                                  {% assign display_discount = discount_percentage %}
-                                {% endif %}
-                                <div class="save_bg_color">Save {{ display_discount }}%</div>
+                              {%- if old_price > 0 -%}
+                                <span class="save_bg_color">Save 70%</span>
                               {%- endif -%}
                             </div>
                           </div>
@@ -318,22 +260,8 @@
                       <div class="price">
                         <div class="discount_price_col">
                           <div class="bundle_discount_price_wrap">
-                            {%- assign old_price = product.compare_at_price -%}
-                            {%- assign new_price = product.price -%}
-
-                            {%- if product.handle == 'starter-bundle' -%}
-                              {%- assign old_price = 8490 -%}
-                            {%- elsif product.handle == 'athlete-bundle' -%}
-                              {%- assign old_price = 15995 -%}
-                            {%- elsif product.handle == 'team-bundle' -%}
-                              {%- assign old_price = 34495 -%}
-                            {%- elsif product.handle == 'accessories-bundle' -%}
-                              {%- assign old_price = 15495 -%}
-                            {%- elsif product.handle == 'starter-bundle-copy' -%}
-                              {%- assign old_price = 11995 -%}
-                            {%- elsif product.handle == 'essential-accessories-bundle' -%}
-                              {%- assign old_price = 15495 -%}
-                            {%- endif -%}
+                            {%- assign old_price = product.price -%}
+                            {%- assign new_price = old_price | times: 0.30 | round -%}
                             
                             {%- if old_price > 0 -%}
                               <span class="total_value">
@@ -343,23 +271,8 @@
                             
                             <div class="percentage_price_col">
                               <span>{{ new_price | money }}</span>
-                              
-                              {%- if old_price > new_price -%}
-                                {% assign discount_amount = new_price | times: 100 %}
-                                {% assign get_diff = discount_amount | divided_by: old_price %}
-                                
-                                {% assign discount_percentage = 100 | minus: get_diff | round: 0 %}
-                                
-                                {% if discount_percentage >= 40 and discount_percentage < 45 %}
-                                  {% assign display_discount = 40 %}
-                                {% elsif discount_percentage >= 45 and discount_percentage < 49 %}
-                                  {% assign display_discount = 45 %}
-                                {% elsif discount_percentage >= 49 %}
-                                  {% assign display_discount = 50 %}
-                                {% else %}
-                                  {% assign display_discount = discount_percentage %}
-                                {% endif %}
-                                <div class="save_bg_color">Save {{ display_discount }}%</div>
+                              {%- if old_price > 0 -%}
+                                <span class="save_bg_color">Save 70%</span>
                               {%- endif -%}
                             </div>
                           </div>
@@ -431,22 +344,8 @@
                       <div class="price">
                         <div class="discount_price_col">
                           <div class="bundle_discount_price_wrap">
-                            {%- assign old_price = product.compare_at_price -%}
-                            {%- assign new_price = product.price -%}
-
-                            {%- if product.handle == 'starter-bundle' -%}
-                              {%- assign old_price = 8490 -%}
-                            {%- elsif product.handle == 'athlete-bundle' -%}
-                              {%- assign old_price = 15995 -%}
-                            {%- elsif product.handle == 'team-bundle' -%}
-                              {%- assign old_price = 34495 -%}
-                            {%- elsif product.handle == 'accessories-bundle' -%}
-                              {%- assign old_price = 15495 -%}
-                            {%- elsif product.handle == 'starter-bundle-copy' -%}
-                              {%- assign old_price = 11995 -%}
-                            {%- elsif product.handle == 'essential-accessories-bundle' -%}
-                              {%- assign old_price = 15495 -%}
-                            {%- endif -%}
+                            {%- assign old_price = product.price -%}
+                            {%- assign new_price = old_price | times: 0.30 | round -%}
                             
                             {%- if old_price > 0 -%}
                               <span class="total_value">
@@ -456,23 +355,8 @@
                             
                             <div class="percentage_price_col">
                               <span>{{ new_price | money }}</span>
-                              
-                              {%- if old_price > new_price -%}
-                                {% assign discount_amount = new_price | times: 100 %}
-                                {% assign get_diff = discount_amount | divided_by: old_price %}
-                                
-                                {% assign discount_percentage = 100 | minus: get_diff | round: 0 %}
-                                
-                                {% if discount_percentage >= 40 and discount_percentage < 45 %}
-                                  {% assign display_discount = 40 %}
-                                {% elsif discount_percentage >= 45 and discount_percentage < 49 %}
-                                  {% assign display_discount = 45 %}
-                                {% elsif discount_percentage >= 49 %}
-                                  {% assign display_discount = 50 %}
-                                {% else %}
-                                  {% assign display_discount = discount_percentage %}
-                                {% endif %}
-                                <div class="save_bg_color">Save {{ display_discount }}%</div>
+                              {%- if old_price > 0 -%}
+                                <span class="save_bg_color">Save 70%</span>
                               {%- endif -%}
                             </div>
                           </div>
@@ -544,22 +428,8 @@
                       <div class="price">
                         <div class="discount_price_col">
                           <div class="bundle_discount_price_wrap">
-                            {%- assign old_price = product.compare_at_price -%}
-                            {%- assign new_price = product.price -%}
-
-                            {%- if product.handle == 'starter-bundle' -%}
-                              {%- assign old_price = 8490 -%}
-                            {%- elsif product.handle == 'athlete-bundle' -%}
-                              {%- assign old_price = 15995 -%}
-                            {%- elsif product.handle == 'team-bundle' -%}
-                              {%- assign old_price = 34495 -%}
-                            {%- elsif product.handle == 'accessories-bundle' -%}
-                              {%- assign old_price = 15495 -%}
-                            {%- elsif product.handle == 'starter-bundle-copy' -%}
-                              {%- assign old_price = 11995 -%}
-                            {%- elsif product.handle == 'essential-accessories-bundle' -%}
-                              {%- assign old_price = 15495 -%}
-                            {%- endif -%}
+                            {%- assign old_price = product.price -%}
+                            {%- assign new_price = old_price | times: 0.30 | round -%}
                             
                             {%- if old_price > 0 -%}
                               <span class="total_value">
@@ -569,23 +439,8 @@
                             
                             <div class="percentage_price_col">
                               <span>{{ new_price | money }}</span>
-                              
-                              {%- if old_price > new_price -%}
-                                {% assign discount_amount = new_price | times: 100 %}
-                                {% assign get_diff = discount_amount | divided_by: old_price %}
-                                
-                                {% assign discount_percentage = 100 | minus: get_diff | round: 0 %}
-                                
-                                {% if discount_percentage >= 40 and discount_percentage < 45 %}
-                                  {% assign display_discount = 40 %}
-                                {% elsif discount_percentage >= 45 and discount_percentage < 49 %}
-                                  {% assign display_discount = 45 %}
-                                {% elsif discount_percentage >= 49 %}
-                                  {% assign display_discount = 50 %}
-                                {% else %}
-                                  {% assign display_discount = discount_percentage %}
-                                {% endif %}
-                                <div class="save_bg_color">Save {{ display_discount }}%</div>
+                              {%- if old_price > 0 -%}
+                                <span class="save_bg_color">Save 70%</span>
                               {%- endif -%}
                             </div>
                           </div>
@@ -657,22 +512,8 @@
                       <div class="price">
                         <div class="discount_price_col">
                           <div class="bundle_discount_price_wrap">
-                            {%- assign old_price = product.compare_at_price -%}
-                            {%- assign new_price = product.price -%}
-
-                            {%- if product.handle == 'starter-bundle' -%}
-                              {%- assign old_price = 8490 -%}
-                            {%- elsif product.handle == 'athlete-bundle' -%}
-                              {%- assign old_price = 15995 -%}
-                            {%- elsif product.handle == 'team-bundle' -%}
-                              {%- assign old_price = 34495 -%}
-                            {%- elsif product.handle == 'accessories-bundle' -%}
-                              {%- assign old_price = 15495 -%}
-                            {%- elsif product.handle == 'starter-bundle-copy' -%}
-                              {%- assign old_price = 11995 -%}
-                            {%- elsif product.handle == 'essential-accessories-bundle' -%}
-                              {%- assign old_price = 15495 -%}
-                            {%- endif -%}
+                            {%- assign old_price = product.price -%}
+                            {%- assign new_price = old_price | times: 0.30 | round -%}
                             
                             {%- if old_price > 0 -%}
                               <span class="total_value">
@@ -682,23 +523,8 @@
                             
                             <div class="percentage_price_col">
                               <span>{{ new_price | money }}</span>
-                              
-                              {%- if old_price > new_price -%}
-                                {% assign discount_amount = new_price | times: 100 %}
-                                {% assign get_diff = discount_amount | divided_by: old_price %}
-                                
-                                {% assign discount_percentage = 100 | minus: get_diff | round: 0 %}
-                                
-                                {% if discount_percentage >= 40 and discount_percentage < 45 %}
-                                  {% assign display_discount = 40 %}
-                                {% elsif discount_percentage >= 45 and discount_percentage < 49 %}
-                                  {% assign display_discount = 45 %}
-                                {% elsif discount_percentage >= 49 %}
-                                  {% assign display_discount = 50 %}
-                                {% else %}
-                                  {% assign display_discount = discount_percentage %}
-                                {% endif %}
-                                <div class="save_bg_color">Save {{ display_discount }}%</div>
+                              {%- if old_price > 0 -%}
+                                <span class="save_bg_color">Save 70%</span>
                               {%- endif -%}
                             </div>
                           </div>
