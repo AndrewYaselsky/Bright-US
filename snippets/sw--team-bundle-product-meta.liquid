@@ -149,19 +149,16 @@
         <div class="product_prices">{{ product.compare_at_price | money }}</div>
       {% endcomment %}
 
+      {%- assign bundle_compare_price = product.price -%}
+      {%- assign bundle_sale_price = bundle_compare_price | times: 0.30 | round -%}
       <div class="percentage_price_col">
-        <div class="product_prices">{{ product.compare_at_price | money }}</div>
-        <div class="product_prices_sum"></div>
+        <div class="product_prices"></div>
+        <div class="product_prices_sum">{{ bundle_sale_price | money }}</div>
         <div class="product_right_price">
-          {% assign savings_percentage = 100
-            | times: product.compare_at_price
-            | minus: product.price
-            | divided_by: product.compare_at_price
-          %}
-          {% if savings_percentage > 0 %}
-            <span class="save_bg_color"> {{ section.settings.save_percentage_text }} </span>
+          {% if bundle_compare_price > 0 %}
+            <span class="save_bg_color"> save 70% </span>
           {% endif %}
-          <div class="product_right_total_price">Total value <span>€84,90</span></div>
+          <div class="product_right_total_price">Total value <span>{{ bundle_compare_price | money }}</span></div>
         </div>
       </div>
       <!-- <span class="save_meta_price">Save $25</span> -->

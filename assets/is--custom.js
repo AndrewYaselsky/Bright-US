@@ -602,11 +602,23 @@ $(function() {
 
 /* bundle product page */
 
+function bundleSalePrice(formattedPrice) {
+  var raw = String(formattedPrice || '');
+  var numeric = parseFloat(raw.replace(/[^0-9.]/g, ''));
+  if (!numeric) return raw;
+  var sale = (Math.round(numeric * 30) / 100).toFixed(2);
+  if (raw.indexOf('$') !== -1) return '$' + sale;
+  return sale;
+}
+
 $(document).ready(function(){
   
   var prices = $(".bundle_pick_ball_box_in.active").data("price");
 
-        $(".product_prices_sum").text(prices);
+        if (prices) {
+          $(".product_prices_sum").text(bundleSalePrice(prices));
+          $(".product_right_total_price span").text(prices);
+        }
         $(".show_add_to_cart .sticky_product_name_after_current").text(prices);
   
     // Get the value of the checked radio button
@@ -718,13 +730,6 @@ $(document).ready(function(){
         // var vals = $(".bundle_pick_ball_box_in.active").find(".com_price").attr("data");
         // console.log(vals);
         // $(".product_right_total_price span").text(vals);
-   setTimeout(function(){
-        var vals = $(".bundle_pick_ball_box_in.active").find(".com_price").attr("data");
-
-        $(".product_right_total_price span").text(vals);
-        //$(".product_right_total_price").text(vals);
-      }, 10000);  
-  
     $(".bundle_pick_ball_box_in").click(function () {
 
         $(".bundle_pick_ball_box_in").removeClass("active");
@@ -732,14 +737,11 @@ $(document).ready(function(){
 
         var prices = $(".bundle_pick_ball_box_in.active").data("price");
 
-        $(".product_prices_sum").text(prices);
+        $(".product_prices_sum").text(bundleSalePrice(prices));
+        $(".product_right_total_price span").text(prices);
 
         $(".show_add_to_cart .sticky_product_name_after_current").text(prices);
         $(".sticky_product_name_after span.sticky_product_name_after_current").text(prices);
-      
-        var vals = $(".bundle_pick_ball_box_in.active").find(".com_price").attr("data");
-
-        $(".product_right_total_price span").text(vals);
 
         //$(".ProductMeta__PriceLis_save .sticky_product_name_after_old").html("<b>was</b> " +vals);
       
