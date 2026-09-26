@@ -335,10 +335,13 @@
 
                     <div class="product-header1_submit">
                       {%- assign selected_variant = product.selected_or_first_available_variant -%}
+                      {%- form 'product', product, id: 'golf-bundle-product-form', class: 'ProductForm' -%}
+                        <input type="hidden" name="id" value="{{ selected_variant.id }}">
+                        <input type="hidden" name="quantity" value="1">
                       <button
                         id="themainestbutton"
                         style="min-height: 56px;justify-content:center;column-gap:10px;"
-                        type="button"
+                        type="submit"
                         class="Main_AddTocart_button maison_test ProductForm__AddToCart Button pulse-animation {% if selected_variant.available and section.settings.show_payment_button == false %}Button--primary shopify-payment-button__button shopify-payment-button__button--unbranded{% else %}shopify-payment-button__button shopify-payment-button__button--unbranded {% endif %} Button--full"
                         {% unless selected_variant.available %}
                           disabled="disabled"
@@ -354,6 +357,7 @@
                           </span>
                         {%- endif -%}
                       </button>
+                      {%- endform -%}
                     
                       <div class="klarna_payment">
                         <p class="klarna_text">{{ section.settings['klarna-payment-text'] }}</p>
@@ -921,19 +925,50 @@
   
     const atcBtn = document.querySelector('#themainestbutton');
     const text = atcBtn.querySelector('span');
+
+    function getKachingBundleItems() {
+      const block = document.querySelector('kaching-bundles-block');
+      if (!block || typeof block.items !== 'function') return null;
+
+      let selected = [];
+      try {
+        selected = block.items() || [];
+      } catch (error) {
+        return null;
+      }
+
+      if (!selected.length) return null;
+
+      return selected.map((item) => {
+        const line = {
+          id: Number(item.id),
+          quantity: Number(item.quantity) || 1
+        };
+
+        if (item.properties) line.properties = item.properties;
+        if (item.selling_plan) line.selling_plan = Number(item.selling_plan);
+        return line;
+      }).filter((line) => line.id);
+    }
   
     atcBtn.addEventListener('click', async (e) => {
-  
-      var variantid = document.querySelector('.quantity_selector .single_quantity.selected').dataset.id;
+      e.preventDefault();
+
+      const kachingItems = getKachingBundleItems();
+      const selectedQuantity = document.querySelector('.quantity_selector .single_quantity.selected');
+      const items = kachingItems || (selectedQuantity ? [{
+        id: Number(selectedQuantity.dataset.id),
+        quantity
+      }] : null);
+
+      if (!items || !items.length) return;
   
       text.innerText = '{{section.settings.cart-button-before-text}}';
   
       await fetch('/cart/add.js', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          items: [{ id: variantid, quantity }],
-        }),
+        body: JSON.stringify({ items }),
       });
   
       atcBtn.classList.add('added');
