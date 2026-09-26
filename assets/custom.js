@@ -579,7 +579,7 @@ $(".upsell_drawer_scrollbar .upsell-drawer-list").scroll(function () {
     $(".pass_qty_hidden").val(g_qty);
   
     var final_price = $(this).find("h6").data("oprice");
-    if (!document.querySelector('kaching-bundles-block')) {
+    if (!document.querySelector('#golf-bundle-product-form')) {
       $(".changable_price_main").html($(this).data("price"));
       $(".compare_at_price_main").html($(this).data("old-price"));
     }
@@ -598,7 +598,7 @@ $(".upsell_drawer_scrollbar .upsell-drawer-list").scroll(function () {
     $(".pass_qty_hidden").val(g_qty);
   
     var final_price = $(this).find("h6").data("oprice");
-    if (!document.querySelector('kaching-bundles-block')) {
+    if (!document.querySelector('#golf-bundle-product-form')) {
       $(".changable_price_main").html(final_price);
     }
   
@@ -612,7 +612,7 @@ $(".upsell_drawer_scrollbar .upsell-drawer-list").scroll(function () {
 const element_single_quantity = document.querySelector('.single_quantity');
 if (element_single_quantity) {
   document.querySelector(".single_quantity").addEventListener("click", () => {
-    if (document.querySelector('kaching-bundles-block')) return;
+    if (document.querySelector('#golf-bundle-product-form')) return;
     document.querySelector(".changable_price_main").innerText = document.querySelector(".quanity-price").innerText;
   });
 }

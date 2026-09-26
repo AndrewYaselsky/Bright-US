@@ -779,7 +779,7 @@ $(document).ready(function(){
 });
 
 window.onload = function() {
-    if (document.querySelector('kaching-bundles-block')) return;
+    if (document.querySelector('#golf-bundle-product-form')) return;
     var element = document.querySelector('.firstclick');
     if (element) {
         element.click();

@@ -57,22 +57,41 @@
   {% endfor %}
 
   {% if discount_offer_text %}
+    {%- liquid
+      assign default_variant_price = product.selected_or_first_available_variant.price
+      if product.tags contains 'bogo-deal'
+        assign default_bundle_price = default_variant_price | times: 2
+        assign default_compare_price = default_variant_price | times: 2
+      else
+        assign discount_amount_2 = default_variant_price | times: 0.55
+        assign final_price_2 = default_variant_price | minus: discount_amount_2
+        if final_price_2 < 3845
+          assign final_price_2 = 34.95
+        elsif final_price_2 < 4345
+          assign final_price_2 = 41.95
+        else
+          assign final_price_2 = 44.95
+        endif
+        assign default_bundle_price = final_price_2 | times: 100
+        assign default_compare_price = default_variant_price
+      endif
+    -%}
     <div class="ProductMeta__PriceList Heading" style="min-height: 40px;">
       
       {%- if price > 0 -%}
-        <span class="ProductMeta__Price Price Price--highlight maison_test Text--subdued u-h3 changable_price_main" data-money-convertible></span>
+        <span class="ProductMeta__Price Price Price--highlight maison_test Text--subdued u-h3 changable_price_main" data-money-convertible>{{ default_bundle_price | money }}</span>
         <div class="ProductMeta__PriceLis_save">
           <span
             class="ProductMeta__Price Price Price--compareAt Text--subdued u-h5 compare_at_price_main"
             data-compare="{{ compare_at_price | money }}"
-            data-money-convertible></span>
+            data-money-convertible><b>was</b><p>{{ default_compare_price | money_without_trailing_zeros }}</p></span>
         </div>
         <div style="display: none;">Save <b class="sticky_product_name_percent">{{ save }}%</b></div>
       {%- else -%}
         {% assign dis_price = product.selected_or_first_available_variant.price | times: 30 | divided_by: 100 | round %}
         {% assign get_discount_price = product.selected_or_first_available_variant.price | minus: dis_price %}
   
-        <span class="ProductMeta__Price Price Price--highlight maison_test Text--subdued u-h3 changable_price_main" data-money-convertible></span>
+        <span class="ProductMeta__Price Price Price--highlight maison_test Text--subdued u-h3 changable_price_main" data-money-convertible>{{ default_bundle_price | money }}</span>
         <div class="ProductMeta__PriceLis_save">
             {% assign old_price = product.selected_or_first_available_variant.price %}
             {% assign new_price = get_discount_price %}
@@ -89,14 +108,14 @@
         <span
           class="ProductMeta__Price Price Price--compareAt Text--subdued u-h5 compare_at_price_main"
           data-compare="{{ product.selected_or_first_available_variant.price | times: 2  }}"
-          data-money-convertible></span>
+          data-money-convertible><b>was</b><p>{{ default_compare_price | money_without_trailing_zeros }}</p></span>
         </div>
         <div style="display: none;">Save <b class="sticky_product_name_percent">{{ rounded_discount_percentage }}%</b></div>
     {%- endif -%}
   {% else %}
     {% if flag_offer %}
       <div class="ProductMeta__PriceList Heading">
-        <span class="ProductMeta__Price Price Price--highlight maison_test Text--subdued u-h3 changable_price_main" data-money-convertible></span>
+        <span class="ProductMeta__Price Price Price--highlight maison_test Text--subdued u-h3 changable_price_main" data-money-convertible>{{ product.selected_or_first_available_variant.price | minus: 1000 | money }}</span>
         <div class="ProductMeta__PriceLis_save">
           {% assign old_price = product.selected_or_first_available_variant.compare_at_price %}
           {% assign new_price = product.selected_or_first_available_variant.price %}
