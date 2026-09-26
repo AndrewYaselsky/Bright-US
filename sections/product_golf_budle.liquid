@@ -951,14 +951,21 @@
       }).filter((line) => line.id);
     }
 
-    function bundlePriceText(price) {
-      if (!price) return '';
-      if (typeof price === 'string') return price;
-      return price.formatted || '';
+    function golfBundlePriceText(price) {
+      if (price == null || price === '') return '';
+      if (typeof price === 'string') {
+        const value = price.trim();
+        return value === '[object Object]' ? '' : value;
+      }
+      if (typeof price.formatted === 'string') {
+        const value = price.formatted.trim();
+        return value === '[object Object]' ? '' : value;
+      }
+      return '';
     }
 
     function setBundlePriceElement(el, html) {
-      if (!el || !html) return;
+      if (!el || typeof html !== 'string' || !html || html.indexOf('[object Object]') !== -1) return;
       el.innerHTML = html;
 
       const shopCurrency = window.theme && window.theme.shopCurrency;
@@ -979,8 +986,8 @@
     function updateBundlePrices(pricing) {
       if (!pricing) return;
 
-      const current = bundlePriceText(pricing.discountedPrice);
-      const compare = bundlePriceText(pricing.fullPrice);
+      const current = golfBundlePriceText(pricing.discountedPrice);
+      const compare = golfBundlePriceText(pricing.fullPrice);
       if (!current) return;
 
       const isDiscounted = Boolean(compare) && current !== compare;
