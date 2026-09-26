@@ -950,6 +950,54 @@
         return line;
       }).filter((line) => line.id);
     }
+
+    function bundlePriceText(price) {
+      if (!price) return '';
+      if (typeof price === 'string') return price;
+      return price.formatted || '';
+    }
+
+    function updateBundlePrices(pricing) {
+      if (!pricing) return;
+
+      const current = bundlePriceText(pricing.discountedPrice);
+      const compare = bundlePriceText(pricing.fullPrice);
+      const currentEl = document.querySelector('.changable_price_main');
+      const compareEl = document.querySelector('.compare_at_price_main');
+
+      if (currentEl && current) currentEl.textContent = current;
+      if (compareEl && compare) compareEl.innerHTML = '<b>was</b> <p>' + compare + '</p>';
+
+      const stickyCurrent = document.querySelector('.sticky-add-to-cart-content-price .money');
+      const stickyCompare = document.querySelector('.sticky-add-to-cart-content-compare-at-price');
+      if (stickyCurrent && current) stickyCurrent.textContent = current;
+      if (stickyCompare && compare) stickyCompare.textContent = compare;
+    }
+
+    document.addEventListener('variants-changed', (event) => {
+      const block = event.target;
+      if (!block || block.tagName !== 'KACHING-BUNDLES-BLOCK') return;
+      updateBundlePrices(event.detail && event.detail.pricing);
+    });
+
+    function syncKachingPrice(block) {
+      if (!block || block.dataset.priceBound === 'true' || typeof block.pricing !== 'function') return;
+      block.dataset.priceBound = 'true';
+      updateBundlePrices(block.pricing());
+    }
+
+    const kachingPriceBlock = document.querySelector('kaching-bundles-block');
+    if (kachingPriceBlock) {
+      syncKachingPrice(kachingPriceBlock);
+    } else {
+      const kachingPriceObserver = new MutationObserver(() => {
+        const block = document.querySelector('kaching-bundles-block');
+        if (!block) return;
+        kachingPriceObserver.disconnect();
+        syncKachingPrice(block);
+      });
+      kachingPriceObserver.observe(document.documentElement, { childList: true, subtree: true });
+    }
   
     atcBtn.addEventListener('click', async (e) => {
       e.preventDefault();
@@ -1112,14 +1160,16 @@
     const stickyAtc = document.querySelector('.sticky-add-to-cart');
     if (stickyAtc != null) {
       const selectedVariant = document.querySelector('.quantity_selector .single_quantity.selected');
-      stickyAtc.querySelector('.sticky-add-to-cart-content-price .money').innerText = selectedVariant.dataset.price;
-      stickyAtc.querySelector('.sticky-add-to-cart-content-price .sticky-add-to-cart-content-compare-at-price').innerText = selectedVariant.dataset.oldPrice;
-      document.querySelectorAll('.quantity_selector .single_quantity').forEach((qty) => {
-        qty.addEventListener('click', (e) => {
-          stickyAtc.querySelector('.sticky-add-to-cart-content-price .money').innerText = qty.dataset.price;
-          stickyAtc.querySelector('.sticky-add-to-cart-content-price .sticky-add-to-cart-content-compare-at-price').innerText = qty.dataset.oldPrice;
-        });
-      })
+      if (selectedVariant && !document.querySelector('kaching-bundles-block')) {
+        stickyAtc.querySelector('.sticky-add-to-cart-content-price .money').innerText = selectedVariant.dataset.price;
+        stickyAtc.querySelector('.sticky-add-to-cart-content-price .sticky-add-to-cart-content-compare-at-price').innerText = selectedVariant.dataset.oldPrice;
+        document.querySelectorAll('.quantity_selector .single_quantity').forEach((qty) => {
+          qty.addEventListener('click', (e) => {
+            stickyAtc.querySelector('.sticky-add-to-cart-content-price .money').innerText = qty.dataset.price;
+            stickyAtc.querySelector('.sticky-add-to-cart-content-price .sticky-add-to-cart-content-compare-at-price').innerText = qty.dataset.oldPrice;
+          });
+        })
+      }
   
       const stickyAtcBtn = stickyAtc.querySelector('.sticky-add-to-cart-button');
       
