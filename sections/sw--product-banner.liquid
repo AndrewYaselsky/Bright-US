@@ -1,0 +1,64 @@
+<div class="bundle_banner_wrapper product_banner_wrapper">
+  <div class="container">
+  <div class="product_banner_inner">
+    <div class="bundle_banner_col">
+      <div class="bundle_banner_box">
+        {% if settings.sub_heading  != blank %}
+          <div class="bundle_banner_box_top_heading">
+            <h6>{{ settings.sub_heading }}</h6>
+          </div>
+        {% endif %}
+        <div class="bundle_discount_col">
+          {%- if template.name == 'product' and product.tags contains 'bogo-deal' -%}
+            <img src="https://cdn.shopify.com/s/files/1/0664/6526/7950/files/ChristmasSale-BOGO-Desktop-ENGlish.jpg?v=1764681017" class="bundle_desktop">
+            <img src="https://cdn.shopify.com/s/files/1/0664/6526/7950/files/ChristmasSale-BOGO-Mobile-English.jpg?v=1764681017" class="bundle_mobile">
+          {%- elsif template.name == 'collection' and collection.handle == 'bogo' -%}
+            <img src="https://cdn.shopify.com/s/files/1/0664/6526/7950/files/ChristmasSale-BOGO-Desktop-ENGlish.jpg?v=1764681017" class="bundle_desktop">
+            <img src="https://cdn.shopify.com/s/files/1/0664/6526/7950/files/ChristmasSale-BOGO-Mobile-English.jpg?v=1764681017" class="bundle_mobile">
+          {%- else -%}
+            <img src="{{ settings.bg_image | img_url:'master' }}" class="bundle_desktop">
+            <img src="{{ settings.bg_image_mobile | img_url:'master' }}" class="bundle_mobile">
+          {%- endif -%}
+      </div>
+    </div>
+  </div>
+  </div>
+  </div>
+</div>
+
+<style>
+  .bundle_banner_sec .bundle_banner_col{
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    background-size: cover !important;
+    aspect-ratio: 800/119;
+    width: 100%;
+    min-height: unset !important;
+  }
+  @media (max-width:767px){
+    .bundle_banner_sec .bundle_banner_col{
+      background-position: center !important;
+      background-repeat: no-repeat !important;
+      background-size: cover !important;
+      display: flex;
+      align-items: center;
+      aspect-ratio: 11 / 4;
+      width: 100%;
+      min-height: unset !important;
+    }
+  }
+</style>
+
+{% schema %}
+  {
+    "name": "Bundle Banner",
+    "class" : "bundle_banner_sec",
+    "settings": [
+     ],
+    "presets" : [
+      {
+        "name" : "Product Banner"
+      }
+    ]
+  }
+{% endschema %}

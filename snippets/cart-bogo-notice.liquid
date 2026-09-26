@@ -1,0 +1,19 @@
+{% comment %}
+  Renders BOGO (Buy One Get One) notice in cart
+
+  Usage:
+  {% render 'cart-bogo-notice' %}
+{% endcomment %}
+
+{%- assign showbogocart = false -%}          
+{%- if request.path contains 'bogo' -%}
+  {%- assign showbogocart = true -%}
+{%- elsif template.name == 'collection' and collection.handle == 'bogo' -%}
+  {%- assign showbogocart = true -%}
+{%- endif -%}
+
+{% if showbogocart %}
+  <div class="bogo_notice_cart">
+    You have a free ball <a href="/bogo">Choose your free ball here</a>
+  </div>
+{% endif %}

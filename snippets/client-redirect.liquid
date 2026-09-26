@@ -1,0 +1,307 @@
+/*(function () {
+  try {
+    if (window.location.hostname.includes("us-bright-sports-co")) return;
+
+    var DEBUG = false;
+
+    function log() {
+      if (!DEBUG) return;
+      console.log.apply(
+        console,
+        ["[BRIGHTSPORT-REDIRECT]"].concat([].slice.call(arguments))
+      );
+    }
+
+    var htmlEl = document.documentElement;
+    var host = window.location.hostname;
+    var pathname = window.location.pathname || "/";
+    var search = window.location.search || "";
+    var hash = window.location.hash || "";
+
+    var overrideRedirect = /(?:\?|&)ovr_rdr=1(?:&|$)/.test(search);
+
+    var overrideStorageKey = "brightsport_override_redirect_until";
+    var OVERRIDE_DURATION = 60 * 60 * 1000; // 1 hour
+
+    htmlEl.style.opacity = "0";
+
+    /*
+     * Skip redirect on development / Shopify domains
+     */
+    if (
+      host.includes("myshopify.com") ||
+      host.includes("localhost") ||
+      host.includes("127.0.0.1")
+    ) {
+      log("Skipped: non-production host", host);
+      htmlEl.style.opacity = "1";
+      return;
+    }
+
+    /*
+     * If ovr_rdr=1 exists in URL,
+     * save override for 1 hour.
+     */
+    if (overrideRedirect) {
+      var overrideUntil = Date.now() + OVERRIDE_DURATION;
+
+      try {
+        localStorage.setItem(
+          overrideStorageKey,
+          overrideUntil.toString()
+        );
+      } catch (e) {
+        log("Could not save override to localStorage", e);
+      }
+
+      log(
+        "Override redirect detected. Redirect disabled until:",
+        new Date(overrideUntil)
+      );
+
+      htmlEl.style.opacity = "1";
+      return;
+    }
+
+    /*
+     * Check if a previously stored override is still active.
+     */
+    var storedOverrideUntil = 0;
+
+    try {
+      storedOverrideUntil = parseInt(
+        localStorage.getItem(overrideStorageKey) || "0",
+        10
+      );
+    } catch (e) {
+      log("Could not read override from localStorage", e);
+    }
+
+    /*
+     * Override is still active → don't geo redirect.
+     */
+    if (
+      storedOverrideUntil &&
+      storedOverrideUntil > Date.now()
+    ) {
+      log(
+        "Active redirect override from localStorage until:",
+        new Date(storedOverrideUntil)
+      );
+
+      htmlEl.style.opacity = "1";
+      return;
+    }
+
+    /*
+     * Override expired → remove it.
+     */
+    if (storedOverrideUntil) {
+      try {
+        localStorage.removeItem(overrideStorageKey);
+      } catch (e) {
+        log("Could not remove expired override", e);
+      }
+    }
+
+    var stores = [
+      {
+        store: "https://uk.brightsport.com",
+        countries: {
+          GB: "United Kingdom"
+        }
+      },
+      {
+        store: "https://us.brightsport.com",
+        countries: {
+          US: "United States",
+          UM: "United States Outlying Islands",
+          CA: "Canada",
+          MX: "Mexico"
+        }
+      },
+      {
+        store: "https://au.brightsport.com",
+        countries: {
+          AU: "Australia",
+          NZ: "New Zealand"
+        }
+      }
+    ];
+
+    var DEFAULT_STORE = "https://brightsport.com";
+    var cacheKey = "brightsport_detected_country";
+
+    function normalize(code) {
+      return (code || "")
+        .toString()
+        .trim()
+        .toUpperCase();
+    }
+
+    function finish() {
+      htmlEl.style.opacity = "1";
+    }
+
+    function getCurrentOrigin() {
+      return window.location.origin.replace(/\/$/, "");
+    }
+
+    function getTargetStoreByCountry(code) {
+      code = normalize(code);
+
+      for (var i = 0; i < stores.length; i++) {
+        if (stores[i].countries[code]) {
+          return stores[i].store.replace(/\/$/, "");
+        }
+      }
+
+      return DEFAULT_STORE.replace(/\/$/, "");
+    }
+
+    function buildRedirectUrl(targetOrigin) {
+      var url = new URL(targetOrigin + pathname);
+      var params = new URLSearchParams(search);
+
+      /*
+       * Add override parameter so the destination
+       * knows this redirect was intentional.
+       */
+      params.set("ovr_rdr", "1");
+
+      url.search = params.toString();
+      url.hash = hash || "";
+
+      return url.toString();
+    }
+
+    function handleCountry(code, source) {
+      code = normalize(code);
+
+      log("Country from " + source + ":", code);
+
+      /*
+       * Cache detected country for current session.
+       */
+      if (code) {
+        try {
+          sessionStorage.setItem(cacheKey, code);
+        } catch (e) {
+          log("Could not save country to sessionStorage", e);
+        }
+      }
+
+      var targetOrigin = getTargetStoreByCountry(code);
+      var currentOrigin = getCurrentOrigin();
+
+      log("Current origin:", currentOrigin);
+      log("Target origin:", targetOrigin);
+
+      /*
+       * User is already on the correct store.
+       */
+      if (currentOrigin === targetOrigin) {
+        log("Already on correct store");
+        finish();
+        return;
+      }
+
+      var redirectUrl = buildRedirectUrl(targetOrigin);
+
+      log("Redirecting to:", redirectUrl);
+
+      window.location.replace(redirectUrl);
+    }
+
+    /*
+     * First try cached country.
+     */
+    var cachedCountry = "";
+
+    try {
+      cachedCountry = normalize(
+        sessionStorage.getItem(cacheKey)
+      );
+    } catch (e) {
+      log("Could not read country from sessionStorage", e);
+    }
+
+    if (cachedCountry) {
+      handleCountry(
+        cachedCountry,
+        "sessionStorage"
+      );
+
+      return;
+    }
+
+    /*
+     * Otherwise ask Shopify for detected country.
+     */
+    fetch("/browsing_context_suggestions.json", {
+      credentials: "same-origin"
+    })
+      .then(function (response) {
+        if (!response.ok) {
+          throw new Error(
+            "Request failed with status " + response.status
+          );
+        }
+
+        return response.json();
+      })
+      .then(function (data) {
+        var detected =
+          data && data.detected_values
+            ? data.detected_values
+            : data;
+
+        var code = normalize(
+          (detected &&
+            detected.country &&
+            (
+              detected.country.iso_code ||
+              detected.country.handle ||
+              detected.country.code
+            )) ||
+          detected.country_code ||
+          detected.countryCode ||
+          detected.country_handle
+        );
+
+        handleCountry(code, "Shopify");
+      })
+      .catch(function (error) {
+        log(
+          "Country detection failed:",
+          error
+        );
+
+        var currentOrigin = getCurrentOrigin();
+        var fallbackOrigin =
+          DEFAULT_STORE.replace(/\/$/, "");
+
+        /*
+         * Already on EU/default store.
+         */
+        if (currentOrigin === fallbackOrigin) {
+          finish();
+          return;
+        }
+
+        /*
+         * Shopify detection failed → EU/default fallback.
+         */
+        window.location.replace(
+          buildRedirectUrl(fallbackOrigin)
+        );
+      });
+  } catch (e) {
+    console.error(
+      "[BRIGHTSPORT-REDIRECT] Fatal error:",
+      e
+    );
+
+    document.documentElement.style.opacity = "1";
+  }
+})();*/
