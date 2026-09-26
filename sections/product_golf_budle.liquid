@@ -1065,6 +1065,8 @@
   
   
     $(".single_quantity").on("click", function(){
+      if (document.querySelector('kaching-bundles-block')) return;
+
       $(".changable_price_main").html($(this).data("price"));
   
        var price = $(".changable_price_main1").html($(this).data("price")); // Change to your actual element class

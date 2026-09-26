@@ -579,8 +579,10 @@ $(".upsell_drawer_scrollbar .upsell-drawer-list").scroll(function () {
     $(".pass_qty_hidden").val(g_qty);
   
     var final_price = $(this).find("h6").data("oprice");
-    $(".changable_price_main").html($(this).data("price"));
-    $(".compare_at_price_main").html($(this).data("old-price"));
+    if (!document.querySelector('kaching-bundles-block')) {
+      $(".changable_price_main").html($(this).data("price"));
+      $(".compare_at_price_main").html($(this).data("old-price"));
+    }
   
     if (g_qty == "1") {
       $(".offer_two_three").hide();
@@ -596,7 +598,9 @@ $(".upsell_drawer_scrollbar .upsell-drawer-list").scroll(function () {
     $(".pass_qty_hidden").val(g_qty);
   
     var final_price = $(this).find("h6").data("oprice");
-    $(".changable_price_main").html(final_price);
+    if (!document.querySelector('kaching-bundles-block')) {
+      $(".changable_price_main").html(final_price);
+    }
   
     if (g_qty == "1") {
       $(".offer_two_three").hide();
@@ -608,7 +612,8 @@ $(".upsell_drawer_scrollbar .upsell-drawer-list").scroll(function () {
 const element_single_quantity = document.querySelector('.single_quantity');
 if (element_single_quantity) {
   document.querySelector(".single_quantity").addEventListener("click", () => {
-    document.querySelector(".changable_price_main").innerText = document.querySelector(".quanity-price").innerText; //try this code
+    if (document.querySelector('kaching-bundles-block')) return;
+    document.querySelector(".changable_price_main").innerText = document.querySelector(".quanity-price").innerText;
   });
 }
 
