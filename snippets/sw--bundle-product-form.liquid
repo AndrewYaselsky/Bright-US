@@ -719,47 +719,6 @@
 </script>
 
 <script>
- function setupAddToCart() {
-    let added = false;
-    let quantity = 1;
-  
-    document.querySelectorAll('div[data-qty]').forEach((el) => {
-      el.addEventListener('click', () => {
-        quantity = parseInt(el.getAttribute('data-qty'));
-      });x
-    });
-  
-    const atcBtn = document.querySelector('.ProductForm__AddToCart');
-    const text = atcBtn.querySelector('span');
-  
-    atcBtn.addEventListener('click', async (e) => {
-      var variantid = $("#variant-id").val();
-  
-      text.innerText = '{{section.settings.cart-button-before-text}}';
-  
-      await fetch('/cart/add.js', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          items: [{ id: variantid, quantity }],
-        }),
-      });
-  
-      atcBtn.classList.add('added');
-      
-      added = true;
-      text.innerText = '{{section.settings.cart-button-after-text}}';
-      
-      if (added) return openCart();
-  
-      updateTopCartCount();
-      rerenderCart();
-    });
-  }
-  
-  // Call the function to set up the add to cart functionality
-  setupAddToCart();
-
   $(".single_quantity").on("click", function(){
     $(".changable_price_main").html($(this).data("price"));
     $(".compare_at_price_main").html("<b>was</b> " + $(this).data("old-price"));

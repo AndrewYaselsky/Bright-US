@@ -755,15 +755,19 @@ $(".cart_add").click(function(e){
     e.stopPropagation();
     e.stopImmediatePropagation();
     
-    var ids = $(this).parents(".Product__Info").find('.bundle_pick_ball_box_in.active input[name="id"]').val();
-    var qty = $(this).parents(".Product__Info").find('.bundle_pick_ball_box_in.active input[name="quantity"]').val();
+    var $form = $(this).closest("form");
+    var $activeBall = $form.find(".bundle_pick_ball_box_in.active");
+    var ids = $activeBall.find('input[name="id"]').val() || $activeBall.attr("data-variant") || $form.find("#variant-id").val();
+    var qty = $activeBall.find('input[name="quantity"]').val() || $form.find(".single_quantity.selected").attr("data-qty") || $form.find(".pass_qty_hidden").val() || 1;
+
+    if (!ids) return;
 
     $.ajax({
        type: "POST",
        url: "/cart/add.js",
        data: {
          "id": ids,
-         "quantity": qty
+         "quantity": Number(qty) || 1
        },
        success: function(){
          // window.location.href="https://brightsport.com/cart"; 
