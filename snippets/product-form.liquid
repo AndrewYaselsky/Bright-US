@@ -1193,9 +1193,11 @@
 
 
   $(".single_quantity").on("click", function(){
-    $(".changable_price_main").html($(this).data("price"));
+    var salePrice = this.getAttribute("data-price") || "";
+    var comparePrice = this.getAttribute("data-old-price") || "";
+    if (salePrice) $(".changable_price_main").html(salePrice);
 
-     var price = $(".changable_price_main1").html($(this).data("price")); // Change to your actual element class
+     var price = $(".changable_price_main1").html(salePrice); // Change to your actual element class
 
     // Divide the price by 4
     var dividedPrice = price / 4;
@@ -1204,13 +1206,13 @@
     $(".changable_price_main2").html(dividedPrice.toFixed(2));
 
 
-    $(".changable_price_main1").html($(this).data("price"));
-    $(".compare_at_price_main").html("<b>was</b> <p>" + $(this).data("old-price") + "</p>");
-    $(".sticky_product_name_after_current").html($(this).data("price"));
-    $(".sticky_product_name_after_old").html("<b>was</b> " + $(this).data("old-price"));
+    $(".changable_price_main1").html(salePrice);
+    if (comparePrice) $(".compare_at_price_main").html("<b>was</b> <p>" + comparePrice + "</p>");
+    $(".sticky_product_name_after_current").html(salePrice);
+    $(".sticky_product_name_after_old").html("<b>was</b> " + comparePrice);
 
-    var prices = $(this).data("price");
-    var vals = $(this).data("old-price");
+    var prices = salePrice;
+    var vals = comparePrice;
 
     var saleval = 100 - (Number(prices.replace(/[^0-9.-]+/g,"")) * 100 / Number(vals.replace(/[^0-9.-]+/g,"")));
     saleval = Math.round(saleval);
