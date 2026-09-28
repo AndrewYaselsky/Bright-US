@@ -594,14 +594,22 @@ $(".upsell_drawer_scrollbar .upsell-drawer-list").scroll(function () {
   $(".qty_selector_discount .single_quantity").click(function () {
     $(".qty_selector_discount .single_quantity").removeClass("selected");
     $(this).addClass("selected");
-    var g_qty = $(this).data("qty");
+    var g_qty = $(this).attr("data-qty");
     $(".pass_qty_hidden").val(g_qty);
-  
-    var final_price = $(this).find("h6").data("oprice");
+
     if (!document.querySelector('#golf-bundle-product-form')) {
-      $(".changable_price_main").html(final_price);
+      var salePrice = this.getAttribute("data-price") || "";
+      var comparePrice = this.getAttribute("data-old-price") || "";
+      if (salePrice) {
+        $(".changable_price_main").html(salePrice);
+        $(".sticky_product_name_after_current").html(salePrice);
+      }
+      if (comparePrice) {
+        $(".compare_at_price_main").html("<b>was</b> <p>" + comparePrice + "</p>");
+        $(".sticky_product_name_after_old").html("<b>was</b> " + comparePrice);
+      }
     }
-  
+
     if (g_qty == "1") {
       $(".offer_two_three").hide();
     } else {

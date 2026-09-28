@@ -181,7 +181,7 @@
         endif
 
         assign price2 = final_price_2
-        assign compare_at_price2 = base_price
+        assign compare_at_price2 = base_price | times: 2
         assign save2 = discount_rate_2 | times: 100 | round
 
         assign discount_rate_3 = 0.60
@@ -197,7 +197,11 @@
         endif
 
         assign price3 = final_price_3
-        assign compare_at_price3 = base_price 
+        if product.tags contains 'bogo-deal'
+          assign compare_at_price3 = base_price | times: 4
+        else
+          assign compare_at_price3 = base_price | times: 3
+        endif
         assign save3 = discount_rate_3 | times: 100 | round
       -%}
             
