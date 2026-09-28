@@ -6035,3 +6035,7 @@ transform: translate(-300px) rotate(-45deg);
 .template-collection #shopify-section-is--footer {
   padding-bottom: 120px;
 }
+
+.qty_selector_discount {
+  display: none !important;
+}
