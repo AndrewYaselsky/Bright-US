@@ -285,6 +285,9 @@ body.template-product .product-benefit-text.maison_test {
   /* color: #00fe67; */
   font-size: 12px !important;
 }
+.qty_selector_discount {
+  display: none !important;
+}
 .template-product
   .qty_selector_discount
   .quantity_selector
