@@ -2909,9 +2909,6 @@ body.template-product .bundle_product_page .product-benefit-text.maison_test {
   }
 }
 
-.qty_selector_discount {
-  display: none !important;
-}
 @media (max-width: 767px) {
   .bundle_product_page .bundle_prodcut_description div {
     text-align: center !important;

@@ -181,7 +181,7 @@
         endif
 
         assign price2 = final_price_2
-        assign compare_at_price2 = base_price | times: 2
+        assign compare_at_price2 = base_price
         assign save2 = discount_rate_2 | times: 100 | round
 
         assign discount_rate_3 = 0.60
@@ -197,11 +197,7 @@
         endif
 
         assign price3 = final_price_3
-        if product.tags contains 'bogo-deal'
-          assign compare_at_price3 = base_price | times: 4
-        else
-          assign compare_at_price3 = base_price | times: 3
-        endif
+        assign compare_at_price3 = base_price
         assign save3 = discount_rate_3 | times: 100 | round
       -%}
             
@@ -1193,6 +1189,7 @@
 
 
   $(".single_quantity").on("click", function(){
+    if (document.querySelector(".kaching-bundles__bar, kaching-bundles-block")) return;
     var salePrice = this.getAttribute("data-price") || "";
     var comparePrice = this.getAttribute("data-old-price") || "";
     if (salePrice) $(".changable_price_main").html(salePrice);

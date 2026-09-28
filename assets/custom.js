@@ -572,6 +572,80 @@ $(".upsell_drawer_scrollbar .upsell-drawer-list").scroll(function () {
   }
 });
 
+  function kachingControlsHeaderPrice() {
+    return !!document.querySelector("#golf-bundle-product-form") || !!document.querySelector(".kaching-bundles__bar");
+  }
+
+  function kachingMoneyText(el) {
+    if (!el) return "";
+    var value = (el.textContent || "").replace(/\s+/g, " ").trim();
+    return !value || value === "[object Object]" ? "" : value;
+  }
+
+  function setHeaderMoneyElement(el, html) {
+    if (!el || typeof html !== "string" || !html || html.indexOf("[object Object]") !== -1) return;
+    el.innerHTML = html;
+
+    var shopCurrency = window.theme && window.theme.shopCurrency;
+    var selector = document.querySelector(".CurrencySelector__Select");
+    var activeCurrency = (selector && selector.value) || shopCurrency;
+    if (!shopCurrency) return;
+
+    el.setAttribute("data-currency-" + shopCurrency, html);
+    if (activeCurrency) {
+      el.setAttribute("data-currency-" + activeCurrency, html);
+      el.setAttribute("data-currency", activeCurrency);
+    }
+  }
+
+  var lastKachingHeaderPrice = "";
+
+  function syncKachingHeaderPrice() {
+    if (document.querySelector("#golf-bundle-product-form")) return;
+
+    var bar = document.querySelector(".kaching-bundles__bar--selected");
+    if (!bar) return;
+
+    var sale = kachingMoneyText(bar.querySelector(".kaching-bundles__bar-price"));
+    var compare = kachingMoneyText(bar.querySelector(".kaching-bundles__bar-full-price"));
+    if (!sale) return;
+
+    var signature = sale + "|" + compare;
+    if (signature === lastKachingHeaderPrice) return;
+    lastKachingHeaderPrice = signature;
+
+    var saleEl = document.querySelector(".ProductMeta__PriceList .changable_price_main") || document.querySelector(".changable_price_main");
+    setHeaderMoneyElement(saleEl, sale);
+    document.querySelectorAll(".sticky_product_name_after_current").forEach(function (el) {
+      el.textContent = sale;
+    });
+
+    if (!compare) return;
+
+    var compareEl = document.querySelector(".ProductMeta__PriceList .compare_at_price_main") || document.querySelector(".compare_at_price_main");
+    setHeaderMoneyElement(compareEl, "<b>was</b> <p>" + compare + "</p>");
+    document.querySelectorAll(".sticky_product_name_after_old").forEach(function (el) {
+      el.innerHTML = "<b>was</b> " + compare;
+    });
+  }
+
+  document.addEventListener("click", function (event) {
+    if (!event.target.closest || !event.target.closest(".kaching-bundles__bar")) return;
+    setTimeout(syncKachingHeaderPrice, 0);
+  });
+  document.addEventListener("deal-bar-selected", function () {
+    setTimeout(syncKachingHeaderPrice, 0);
+  });
+  document.addEventListener("variants-changed", function () {
+    setTimeout(syncKachingHeaderPrice, 0);
+  });
+
+  var kachingPriceStarted = Date.now();
+  var kachingPriceTimer = setInterval(function () {
+    syncKachingHeaderPrice();
+    if (Date.now() - kachingPriceStarted > 8000) clearInterval(kachingPriceTimer);
+  }, 200);
+
   $(".qty_selector_discount_old .single_quantity").click(function () {
     $(".qty_selector_discount_old .single_quantity").removeClass("selected");
     $(this).addClass("selected");
@@ -579,7 +653,7 @@ $(".upsell_drawer_scrollbar .upsell-drawer-list").scroll(function () {
     $(".pass_qty_hidden").val(g_qty);
   
     var final_price = $(this).find("h6").data("oprice");
-    if (!document.querySelector('#golf-bundle-product-form')) {
+    if (!kachingControlsHeaderPrice()) {
       $(".changable_price_main").html($(this).data("price"));
       $(".compare_at_price_main").html($(this).data("old-price"));
     }
@@ -597,7 +671,7 @@ $(".upsell_drawer_scrollbar .upsell-drawer-list").scroll(function () {
     var g_qty = $(this).attr("data-qty");
     $(".pass_qty_hidden").val(g_qty);
 
-    if (!document.querySelector('#golf-bundle-product-form')) {
+    if (!kachingControlsHeaderPrice()) {
       var salePrice = this.getAttribute("data-price") || "";
       var comparePrice = this.getAttribute("data-old-price") || "";
       if (salePrice) {
@@ -620,7 +694,7 @@ $(".upsell_drawer_scrollbar .upsell-drawer-list").scroll(function () {
 const element_single_quantity = document.querySelector('.single_quantity');
 if (element_single_quantity) {
   document.querySelector(".single_quantity").addEventListener("click", () => {
-    if (document.querySelector('#golf-bundle-product-form')) return;
+    if (kachingControlsHeaderPrice()) return;
     document.querySelector(".changable_price_main").innerText = document.querySelector(".quanity-price").innerText;
   });
 }
