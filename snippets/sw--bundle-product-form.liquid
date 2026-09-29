@@ -48,7 +48,7 @@
           %}
           {% assign get_discount_price_one = selected_variant.price | minus: dis_price_one %}
     
-        <div class="single_quantity" data-qty="1" data-price="{{ get_discount_price_one | money }}" data-old-price="{{ selected_variant.price | money }}">
+        <div class="single_quantity selected firstclick" data-qty="1" data-price="{{ get_discount_price_one | money }}" data-old-price="{{ selected_variant.price | money }}">
           <div class="option_radio_custom"></div>
 
           <div class="single_quantity_main">
@@ -67,7 +67,7 @@
           {% assign get_discount_price_two = selected_variant.price | minus: dis_price_two %}
           
     
-        <div class="single_quantity selected firstclick" data-qty="2" data-price="{{ get_discount_price_two | times: 2 | money }}" data-old-price="{{ selected_variant.price | times: 2 | money }}">
+        <div class="single_quantity" data-qty="2" data-price="{{ get_discount_price_two | times: 2 | money }}" data-old-price="{{ selected_variant.price | times: 2 | money }}">
           <div class="option_radio_custom"></div>
 
           <div class="single_quantity_main">
