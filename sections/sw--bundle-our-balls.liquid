@@ -219,7 +219,7 @@
                         </button>
                       {%- else %}
                         {% unless forloop.index == 3 %}
-                          <button type="button" name="add" class="product_cart_add_btn ad_to_cart_coll" data-var_id="{{ product.variants.first.id }}" data-add-to-cart="{{ product.variants.first.id }}">
+                          <button type="button" name="add" class="product_cart_add_btn ad_to_cart_coll" {% unless product.variants.first.available %} disabled="disabled" style=" cursor: not-allowed;" {% endunless %} data-var_id="{{ product.variants.first.id }}" data-add-to-cart="{{ product.variants.first.id }}">
                             {%- if product.variants.first.available -%}
                             Add to cart
                             <svg
