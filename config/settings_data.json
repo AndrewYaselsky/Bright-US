@@ -3382,5 +3382,10 @@
       "currency_conversion_enabled": false,
       "cart_show_free_shipping_threshold": false
     }
+  },
+  "platform_customizations": {
+    "custom_css": [
+      "body .last_chance_bar .last_chance_flex,body .last_chance_bar .last_chance_flex * {font-size: 14px !important; font-weight: 800 !important; letter-spacing: 1px !important;}"
+    ]
   }
 }
