@@ -4819,7 +4819,7 @@ html{
 .main-drawer-right span.Subtotal_text.Heading {
     color: var(--white, #FFF);
     font-family: Inter;
-    font-size: 18px;
+    font-size: 22px;
     font-style: normal;
     font-weight: 700;
     line-height: 24px;
@@ -4832,7 +4832,7 @@ html{
 .cart-drawer-cover .Drawer__Footer span.total_price.Heading {
     color: var(--white, #FFF);
     font-family: Inter;
-    font-size: 21px;
+    font-size: 24px;
     font-style: normal;
     font-weight: 700;
     line-height: 32px;
