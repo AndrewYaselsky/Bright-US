@@ -394,78 +394,85 @@
          }
        });
 
-      function updateGiftWrapStatus() {
-        const GIFT_WRAP_VARIANT_ID = parseInt('{{ all_products["giftbagandcard"].selected_or_first_available_variant.id }}');
-        const CHECKBOX_ID = 'ifAddAddon';
-        const $checkbox = $('#' + CHECKBOX_ID);
+            // ===== Gift wrap: ticked by default when the cart has products =====
+      var GIFT_WRAP_VARIANT_ID = parseInt('{{ all_products["giftbagandcard"].selected_or_first_available_variant.id }}', 10);
+      var GIFT_WRAP_OPTOUT_KEY = 'bs_giftwrap_optout';
+      var giftWrapBusy = false;
+      var giftWrapFailed = false;
 
-        if (!GIFT_WRAP_VARIANT_ID || $checkbox.length === 0) {
-          return;
-        }
-
-        jQuery.getJSON('/cart.js')
-          .done(function(cart) {
-            let isGiftWrapInCart = false;
-            let giftWrapItem = null;
-
-            cart.items.forEach(item => {
-              if (item.variant_id === GIFT_WRAP_VARIANT_ID) {
-                isGiftWrapInCart = true;
-                giftWrapItem = item;
-              }
-            });
-
-            if (isGiftWrapInCart) {
-              $checkbox.prop('checked', false);
-              const price = giftWrapItem.price / 100;
-            } else {
-              $checkbox.prop('checked', false);
-            }
-          })
-          .fail(function (jqXHR) {
-            console.error("⚠️ [Gift Wrap Status] Помилка завантаження кошика для перевірки статусу.", jqXHR.status);
-          });
+      function giftWrapOptedOut() {
+        try { return sessionStorage.getItem(GIFT_WRAP_OPTOUT_KEY) === '1'; } catch (e) { return false; }
+      }
+      function setGiftWrapOptOut(on) {
+        try { on ? sessionStorage.setItem(GIFT_WRAP_OPTOUT_KEY, '1') : sessionStorage.removeItem(GIFT_WRAP_OPTOUT_KEY); } catch (e) {}
       }
 
-      $(document).on('change', '#ifAddAddon', function () {
-        var isChecked = $(this).is(':checked');
-        var variantId = '{{ all_products["giftbagandcard"].selected_or_first_available_variant.id }}';
-        var qty = isChecked ? 1 : 0;
-        var rootUrl = (window.Shopify && Shopify.routes ? Shopify.routes.root : '/');
-
+      function setGiftWrapQty(qty) {
+        giftWrapBusy = true;
         var data = {};
-        data['updates[' + variantId + ']'] = qty;
-        
-        console.log(`➡️ [Gift Wrap Action] Зміна статусу. ID: ${variantId}, Нова кількість: ${qty}.`);
-
-        $.ajax({
+        data['updates[' + GIFT_WRAP_VARIANT_ID + ']'] = qty;
+        return $.ajax({
           type: 'POST',
-          url: rootUrl + 'cart/update.js',
+          url: (window.Shopify && Shopify.routes ? Shopify.routes.root : '/') + 'cart/update.js',
           data: data,
           dataType: 'json'
         })
-        .done(function(cart) {
+        .always(function () { giftWrapBusy = false; })
+        .done(function () {
           if (typeof GLOBAL_RENDERCART !== 'undefined' && GLOBAL_RENDERCART._rerenderCart) {
-            GLOBAL_RENDERCART._rerenderCart().then(function() {
-              setTimeout(function() {
-                updateGiftWrapStatus(); 
-              }, 50);
-            });
+            GLOBAL_RENDERCART._rerenderCart().then(function () { setTimeout(updateGiftWrapStatus, 50); });
           } else {
             updateGiftWrapStatus();
           }
         })
-        .fail(function (jqXHR) {
-          console.error('Gift wrap toggle failed:', jqXHR.status, jqXHR.responseText);
+        .fail(function (xhr) {
+          giftWrapFailed = true;
+          console.error('Gift wrap update failed:', xhr.status);
         });
+      }
+
+      function updateGiftWrapStatus() {
+        if (!GIFT_WRAP_VARIANT_ID || giftWrapBusy) return;
+        $.getJSON('/cart.js').done(function (cart) {
+          var hasWrap = false, otherItems = 0;
+          cart.items.forEach(function (item) {
+            if (item.variant_id === GIFT_WRAP_VARIANT_ID) hasWrap = true;
+            else otherItems += item.quantity;
+          });
+          // Products in cart, no wrap yet, customer hasn't switched it off -> add it
+          if (otherItems > 0 && !hasWrap && !giftWrapOptedOut() && !giftWrapFailed) { setGiftWrapQty(1); return; }
+          // Cart emptied but wrap left behind -> remove it
+          if (otherItems === 0 && hasWrap) { setGiftWrapQty(0); return; }
+          $('#ifAddAddon').prop('checked', hasWrap);
+        });
+      }
+
+      $(document).on('change', '#ifAddAddon', function () {
+        var on = $(this).is(':checked');
+        setGiftWrapOptOut(!on);
+        giftWrapFailed = false;
+        setGiftWrapQty(on ? 1 : 0);
       });
 
-      $(document).ready(function() {
-        updateGiftWrapStatus();
-
-        const $checkbox = $('#ifAddAddon');
-        $checkbox.prop('checked', false).trigger('change');
+      // Re-check whenever the cart changes (add to cart, quantity, remove)
+      function bsCartChanged(url) {
+        return /\/cart\/(add|change|update)/.test(url || '');
+      }
+      $(document).ajaxComplete(function (e, xhr, settings) {
+        if (!giftWrapBusy && settings && bsCartChanged(settings.url)) setTimeout(updateGiftWrapStatus, 300);
       });
+      if (window.fetch) {
+        var bsOriginalFetch = window.fetch;
+        window.fetch = function (input) {
+          var url = typeof input === 'string' ? input : (input && input.url) || '';
+          return bsOriginalFetch.apply(this, arguments).then(function (res) {
+            if (!giftWrapBusy && bsCartChanged(url)) setTimeout(updateGiftWrapStatus, 300);
+            return res;
+          });
+        };
+      }
+
+      $(document).ready(updateGiftWrapStatus);
     </script>
     
     <style>
